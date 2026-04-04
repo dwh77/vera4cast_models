@@ -20,12 +20,11 @@ if(exists("curr_reference_datetime") == FALSE){
 }
 
 #Load data formatting functions
-helper.functions <- list.files("./R/fdom_dwh")
-sapply(paste0("./R/fdom_dwh/", helper.functions),source,.GlobalEnv)
-
+# helper.functions <- list.files("./R/fdom_dwh")
+# sapply(paste0("./R/fdom_dwh/", helper.functions),source,.GlobalEnv)
+source("./R/fdom_dwh/helper_functions_DOC.R")
 
 #### set function inputs
-## CHANGE FIRST TWO
 forecast_date <- Sys.Date() - lubridate::days(1)
 #forecast_date <- Sys.Date()
 sites <- c("fcre","bvre")
@@ -33,48 +32,62 @@ forecast_depths <- 'focal'
 
 forecast_horizon <- 34
 n_members <- 31
-calibration_start_date <- ymd("2022-11-11")
-model_id <- "fdom_AR_dwh"
+calibration_start_date <- ymd("2020-10-01")
+model_id <- "DOC_AR_dwh"
 targets_url <- "https://amnh1.osn.mghpcc.org/bio230121-bucket01/vera4cast/targets/project_id=vera4cast/duration=P1D/daily-insitu-targets.csv.gz"
 
-water_temp_4cast_old_url <- "bio230121-bucket01/vt_backup/forecasts/parquet/"
+# #water_temp_4cast_old_url <- "bio230121-bucket01/vt_backup/forecasts/parquet/"
+# #water_temp_4cast_new_url <- 'focal' 
+#noaa_4cast_url <- "bio230121-bucket01/flare/drivers/met/gefs-v12/stage2"
 
-#water_temp_4cast_new_url <- 'focal' 
-
-noaa_4cast_url <- "bio230121-bucket01/flare/drivers/met/gefs-v12/stage2"
-
-var <- "fDOM_QSU_mean"
+var <- "DOC_mgL_sample"
 project_id <- "vera4cast"
 
+##claude edit to get specific depth site pairs
+# # Define site-depth pairs
+# site_depth_pairs <- list(
+#   list(site = "fcre", depth = 0.1),
+#   list(site = "bvre", depth = 0.1),
+#   list(site = "fcre", depth = 1.6)
+# )
+# 
+# forecast_depths <- c(0.1, 1.6)  # kept for reference if needed elsewhere
 
-for (i in sites){
+
+
+for (i in sites){ #change sites to site_depth_pairs for combos above
   
   site <- i
   print(site)
   
+  #rest of claude edit for site pairs
+  # site  <- i$site
+  # depth <- i$depth
+  # print(paste("Site:", site, "| Depth:", depth))
+  
   output_folder <- paste0("./model_output/fdom_dwh/", model_id, "_", site, "_", forecast_date, ".csv")
   
   ##run function
-  forecast_output <- generate_fDOM_forecast(forecast_date = forecast_date, 
+  forecast_output <- generate_DOC_forecast(forecast_date = forecast_date, 
                                             forecast_horizon = forecast_horizon, 
                                             n_members = n_members,
                                             output_folder = output_folder, 
                                             model_id = model_id, 
                                             targets_url = targets_url,
-                                            water_temp_4cast_old_url = water_temp_4cast_old_url,
+                                            #water_temp_4cast_old_url = water_temp_4cast_old_url,
                                             # water_temp_4cast_new_url = water_temp_4cast_new_url,
-                                            noaa_4cast_url = noaa_4cast_url, 
+                                            #noaa_4cast_url = noaa_4cast_url, 
                                             var = var,
                                             site = site, 
                                             forecast_depths = forecast_depths, 
                                             project_id = project_id, 
                                             calibration_start_date = calibration_start_date )
   
-  doc_output <- forecast_output |> 
-    mutate(variable = 'DOC_mgL_sample',
-           prediction = ((0.2697*prediction) + 0.4675))
-  
-  fdom_doc_output <- dplyr::bind_rows(forecast_output, doc_output)
+  # doc_output <- forecast_output |> 
+  #   mutate(variable = 'DOC_mgL_sample',
+  #          prediction = ((0.2697*prediction) + 0.4675))
+  # 
+  # fdom_doc_output <- dplyr::bind_rows(forecast_output, doc_output)
   
   # Write the file locally
   forecast_file_abs_path <- paste0("./model_output/fdom_dwh/", model_id, "_", site, "_", forecast_date, ".csv")

@@ -92,7 +92,7 @@ get_IC_uncert <- function(curr_value_df, n_members){
 
 ## main function
 
-generate_fDOM_forecast <- function(forecast_date, # a recommended argument so you can pass the date to the function
+generate_DOC_forecast <- function(forecast_date, # a recommended argument so you can pass the date to the function
                                    forecast_horizon,
                                    n_members,
                                    output_folder,
@@ -453,44 +453,42 @@ generate_fDOM_forecast <- function(forecast_date, # a recommended argument so yo
 
 # ########### Test function #######
 
-#### set function inputs
-## CHANGE FIRST TWO
-forecast_date <- ymd("2025-07-01")
-site <- "bvre"
-forecast_depths <- 0.1
-
-forecast_horizon <- 16
-n_members <- 31
-calibration_start_date <- ymd("2020-10-01")
-model_id <- "DOC_AR_dwh"
-targets_url <- "https://amnh1.osn.mghpcc.org/bio230121-bucket01/vera4cast/targets/project_id=vera4cast/duration=P1D/daily-insitu-targets.csv.gz"
-
-## #water_temp_4cast_old_url <- "bio230121-bucket01/vt_backup/forecasts/parquet/"
-## #water_temp_4cast_new_url <- 'focal'
-# noaa_4cast_url <- "bio230121-bucket01/flare/drivers/met/gefs-v12/stage2"
-
-var <- "DOC_mgL_sample"
-project_id <- "vera4cast"
-
-output_folder <- paste0("C:/Users/dwh18/Downloads/", model_id, "_", site, "_", forecast_date, ".csv")
-
-
-##run function
-zz <- generate_fDOM_forecast(forecast_date = forecast_date, forecast_horizon = forecast_horizon, n_members = n_members,
-                       output_folder = output_folder, model_id = model_id, targets_url = targets_url,
-                       #water_temp_4cast_old_url = water_temp_4cast_old_url,
-                       # water_temp_4cast_new_url = water_temp_4cast_new_url,
-                       #noaa_4cast_url = noaa_4cast_url, 
-                       var = var, site = site, forecast_depths = forecast_depths, project_id = project_id,
-                       calibration_start_date = calibration_start_date )
-
-
-#look at forecast
-zz|>
-  mutate(date = as.Date(datetime)) |>
-  # filter(forecast_date > ymd("2023-01-03")) |>
-  ggplot(aes(x = date, y = prediction, color = as.character(parameter)))+
-  geom_line()
+# #### set function inputs
+# forecast_date <- ymd("2025-07-01")
+# site <- "bvre"
+# forecast_depths <- 0.1
+# forecast_horizon <- 16
+# n_members <- 31
+# calibration_start_date <- ymd("2020-10-01")
+# model_id <- "DOC_AR_dwh"
+# targets_url <- "https://amnh1.osn.mghpcc.org/bio230121-bucket01/vera4cast/targets/project_id=vera4cast/duration=P1D/daily-insitu-targets.csv.gz"
+# 
+# ## #water_temp_4cast_old_url <- "bio230121-bucket01/vt_backup/forecasts/parquet/"
+# ## #water_temp_4cast_new_url <- 'focal'
+# # noaa_4cast_url <- "bio230121-bucket01/flare/drivers/met/gefs-v12/stage2"
+# 
+# var <- "DOC_mgL_sample"
+# project_id <- "vera4cast"
+# 
+# output_folder <- paste0("C:/Users/dwh18/Downloads/", model_id, "_", site, "_", forecast_date, ".csv")
+# 
+# 
+# ##run function
+# zz <- generate_fDOM_forecast(forecast_date = forecast_date, forecast_horizon = forecast_horizon, n_members = n_members,
+#                        output_folder = output_folder, model_id = model_id, targets_url = targets_url,
+#                        #water_temp_4cast_old_url = water_temp_4cast_old_url,
+#                        # water_temp_4cast_new_url = water_temp_4cast_new_url,
+#                        #noaa_4cast_url = noaa_4cast_url, 
+#                        var = var, site = site, forecast_depths = forecast_depths, project_id = project_id,
+#                        calibration_start_date = calibration_start_date )
+# 
+# 
+# #look at forecast
+# zz|>
+#   mutate(date = as.Date(datetime)) |>
+#   # filter(forecast_date > ymd("2023-01-03")) |>
+#   ggplot(aes(x = date, y = prediction, color = as.character(parameter)))+
+#   geom_line()
 
 
 
