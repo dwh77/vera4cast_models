@@ -454,10 +454,10 @@ generate_DOC_forecast <- function(forecast_date, # a recommended argument so you
 # ########### Test function #######
 
 # #### set function inputs
-# forecast_date <- ymd("2025-07-01")
+# forecast_date <- ymd("2024-06-30")
 # site <- "bvre"
 # forecast_depths <- 0.1
-# forecast_horizon <- 16
+# forecast_horizon <- 30
 # n_members <- 31
 # calibration_start_date <- ymd("2020-10-01")
 # model_id <- "DOC_AR_dwh"
@@ -474,11 +474,11 @@ generate_DOC_forecast <- function(forecast_date, # a recommended argument so you
 # 
 # 
 # ##run function
-# zz <- generate_fDOM_forecast(forecast_date = forecast_date, forecast_horizon = forecast_horizon, n_members = n_members,
+# zz <- generate_DOC_forecast(forecast_date = forecast_date, forecast_horizon = forecast_horizon, n_members = n_members,
 #                        output_folder = output_folder, model_id = model_id, targets_url = targets_url,
 #                        #water_temp_4cast_old_url = water_temp_4cast_old_url,
 #                        # water_temp_4cast_new_url = water_temp_4cast_new_url,
-#                        #noaa_4cast_url = noaa_4cast_url, 
+#                        #noaa_4cast_url = noaa_4cast_url,
 #                        var = var, site = site, forecast_depths = forecast_depths, project_id = project_id,
 #                        calibration_start_date = calibration_start_date )
 # 
@@ -489,9 +489,36 @@ generate_DOC_forecast <- function(forecast_date, # a recommended argument so you
 #   # filter(forecast_date > ymd("2023-01-03")) |>
 #   ggplot(aes(x = date, y = prediction, color = as.character(parameter)))+
 #   geom_line()
-
-
-
-
-
+# 
+# 
+# #Make nicer forecast plot w/ observations
+# library(score4cast)
+# 
+# targetsDF <- readr::read_csv(targets_url, show_col_types = F) |>
+#   filter(variable %in% var,
+#          site_id %in% site,
+#          depth_m %in% forecast_depths)
+# 
+# 
+# AR_scores <- crps_logs_score(zz, targetsDF)
+# 
+# ###set up data for example
+# weekbefore <- targetsDF |> 
+#   mutate(date = as.Date(datetime)) |> 
+#   filter(date > as.Date("2024-06-30"),
+#          date <= ymd("2024-07-30")) 
+# 
+# ### plot
+# example_4cast <- AR_scores |> 
+#    ggplot()+
+#   geom_point(aes(datetime, observation)) +
+#   geom_vline(aes(xintercept = as.Date("2024-07-15")))+
+#   geom_ribbon(aes(x = datetime, ymin = quantile02.5, ymax = quantile97.5, fill = model_id), alpha = 0.2)+
+#   geom_line(aes(x = datetime, y = mean))+
+#   geom_point(data = weekbefore, aes(x = datetime, y = observation))+
+#   labs(x = 'Date', y = 'DOC (mg/L)', fill = "model", color = "model") +
+#   guides(fill = guide_legend(nrow = 6))+
+#   theme_bw() + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank())
+# 
+# example_4cast
 
