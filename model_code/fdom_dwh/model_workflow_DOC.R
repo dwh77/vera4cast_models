@@ -28,7 +28,7 @@ source("./R/fdom_dwh/helper_functions_DOC.R")
 forecast_date <- Sys.Date() - lubridate::days(1)
 #forecast_date <- Sys.Date()
 sites <- c("fcre","bvre")
-forecast_depths <- 'focal'
+forecast_depths <- 0.1 #'focal'
 
 forecast_horizon <- 34
 n_members <- 31
